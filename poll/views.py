@@ -11,7 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 logger = logging.getLogger(__name__)
 
-# Lead candidate ID (ॲड. शोएब शेख)
+
 LEAD_CANDIDATE_ID = 1
 
 def get_client_ip(request):
@@ -26,16 +26,16 @@ def get_client_ip(request):
 def home(request):
     """Render index.html with Open Graph context from SiteSettings"""
     settings = SiteSettings.get_solo()
-    og_title = (settings.title or 'प्रभाग क्र. 8 – ब: में जनता के').strip()
-    og_description = (settings.description or 'नगरसेवक के लिए सर्वश्रेष्ठ उम्मीदवार कौन?').strip()
-    og_image = (settings.image_url or '/static/img/parties/congress.png').strip()
-    og_url = request.build_absolute_uri('/')
+    og_title = 'http://167.71.227.234/'
+    og_description = ''
+    og_image = 'http://167.71.227.234/static/img/parties/LinkShareThumpnel.png'
+    og_url = 'http://167.71.227.234/'
     context = {
         'og_title': og_title,
         'og_description': og_description,
         'og_image': og_image,
         'og_url': og_url,
-        'og_site_name': settings.site_name or 'Ward 8-B Poll',
+        'og_site_name': settings.site_name or '167.71.227.234',
         'og_locale': 'hi_IN',
     }
     return render(request, 'index.html', context)

@@ -4,19 +4,21 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="canonical" href="{{ og_url|default:request.build_absolute_uri|default_if_none:request.build_absolute_uri }}">
+    <link rel="canonical" href="{{ og_url }}">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="{{ og_title|default:'प्रभाग क्र. 8 – ब: में जनता के' }}">
-    <meta property="og:description" content="{{ og_description|default:'नगरसेवक के लिए सर्वश्रेष्ठ उम्मीदवार कौन?' }}">
-    <meta property="og:image" content="{{ og_image|default:'/static/img/parties/congress.png' }}">
-    <meta property="og:url" content="{{ og_url|default:request.build_absolute_uri|default_if_none:request.build_absolute_uri }}">
-    <meta property="og:site_name" content="{{ og_site_name|default:'Ward 8-B Poll' }}">
-    <meta property="og:locale" content="{{ og_locale|default:'hi_IN' }}">
+    <meta property="og:title" content="{{ og_title }}">
+    <meta property="og:description" content="{{ og_description }}">
+    <meta property="og:image" content="{{ og_image }}">
+    <meta property="og:url" content="{{ og_url }}">
+    <meta property="og:site_name" content="{{ og_site_name }}">
+    <meta property="og:locale" content="{{ og_locale }}">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="{{ og_title }}">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{{ og_title|default:'प्रभाग क्र. 8 – ब: में जनता के' }}">
-    <meta name="twitter:description" content="{{ og_description|default:'नगरसेवक के लिए सर्वश्रेष्ठ उम्मीदवार कौन?' }}">
-    <meta name="twitter:image" content="{{ og_image|default:'/static/img/parties/congress.png' }}">
-    <meta name="twitter:url" content="{{ og_url|default:request.build_absolute_uri|default_if_none:request.build_absolute_uri }}">
+    <meta name="twitter:title" content="{{ og_title }}">
+    <meta name="twitter:description" content="{{ og_description }}">
+    <meta name="twitter:image" content="{{ og_image }}">
+    <meta name="twitter:url" content="{{ og_url }}">
     <title data-i18n="page_title">प्रभाग क्र. 8 – ब: में जनता के</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
