@@ -58,11 +58,7 @@ function setupEventListeners() {
     const btnShare = document.getElementById('btn-share');
     if (btnResults) btnResults.addEventListener('click', () => { loadResults(); showResultsSection(); });
     if (btnShare) btnShare.addEventListener('click', () => {
-        if (navigator.share) {
-            shareNative();
-        } else {
-            openShareModal();
-        }
+        openShareModal();
     });
 
     const langHi = document.getElementById('lang-hi');
@@ -484,16 +480,8 @@ function shareNative() {
 
 // Social media sharing functions
 function shareOnWhatsApp() {
-    const lang = localStorage.getItem('lang') || 'hi';
-    const total = (typeof currentResults?.total_votes !== 'undefined') ? currentResults.total_votes : 0;
     const shareUrl = getShareUrl();
-    const textHi = `${shareUrl} — प्रभाग क्र. 8 – ब: नगरसेवक चुनाव परिणाम: कुल ${total} वोट पड़े।`;
-    const textEn = `${shareUrl} — Ward 8-B Councillor Poll Results: Total ${total} votes.`;
-    const text = lang === 'hi' ? textHi : textEn;
-    if (navigator.share) {
-        navigator.share({ title: STRINGS[lang].page_title, text, url: shareUrl }).catch(() => {});
-        return;
-    }
+    const text = shareUrl;
     const isMobile = /Android|iPhone|iPad|iPod|IEMobile|Mobile/i.test(navigator.userAgent);
     const appUrl = `whatsapp://send?text=${encodeURIComponent(text)}`;
     const webUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
@@ -552,13 +540,29 @@ function shareOnFacebook() {
 function copyLink() {
     const input = document.getElementById('share-link-input');
     const toCopy = input ? input.value : getShareUrl();
-    navigator.clipboard.writeText(toCopy).then(() => {
-        const lang = localStorage.getItem('lang') || 'hi';
+    const lang = localStorage.getItem('lang') || 'hi';
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(toCopy).then(() => {
+            showToast(STRINGS[lang].copied, 'success');
+        }).catch(() => {
+            showToast(STRINGS[lang].copy_error, 'error');
+        });
+        return;
+    }
+    const temp = document.createElement('textarea');
+    temp.value = toCopy;
+    temp.style.position = 'fixed';
+    temp.style.opacity = '0';
+    document.body.appendChild(temp);
+    temp.focus();
+    temp.select();
+    try {
+        document.execCommand('copy');
         showToast(STRINGS[lang].copied, 'success');
-    }).catch(() => {
-        const lang = localStorage.getItem('lang') || 'hi';
+    } catch (e) {
         showToast(STRINGS[lang].copy_error, 'error');
-    });
+    }
+    document.body.removeChild(temp);
 }
 
 // Accessibility helpers for modal

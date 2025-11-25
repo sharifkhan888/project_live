@@ -28,7 +28,7 @@ def home(request):
     """Render index.html with Open Graph context from SiteSettings"""
     settings = SiteSettings.get_solo()
     base_url = request.build_absolute_uri('/')
-    og_title = base_url
+    og_title = 'voting poll'
     og_description = ''
     og_image = request.build_absolute_uri(static('img/parties/LinkShareThumpnel.png'))
     og_url = base_url
