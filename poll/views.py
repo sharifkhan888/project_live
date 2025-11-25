@@ -4,6 +4,7 @@ from rest_framework import status
 from django.db import transaction
 from django.db.models import Sum, F, Case, When, Value, IntegerField, Q
 from django.shortcuts import render
+from django.templatetags.static import static
 from .models import Candidate, Vote, VoteCount, SiteSettings
 from .serializers import CandidateSerializer, VoteCountSerializer
 import logging
@@ -26,16 +27,17 @@ def get_client_ip(request):
 def home(request):
     """Render index.html with Open Graph context from SiteSettings"""
     settings = SiteSettings.get_solo()
-    og_title = 'http://167.71.227.234/'
+    base_url = request.build_absolute_uri('/')
+    og_title = base_url
     og_description = ''
-    og_image = 'http://167.71.227.234/static/img/parties/LinkShareThumpnel.png'
-    og_url = 'http://167.71.227.234/'
+    og_image = request.build_absolute_uri(static('img/parties/LinkShareThumpnel.png'))
+    og_url = base_url
     context = {
         'og_title': og_title,
         'og_description': og_description,
         'og_image': og_image,
         'og_url': og_url,
-        'og_site_name': settings.site_name or '167.71.227.234',
+        'og_site_name': settings.site_name or base_url,
         'og_locale': 'hi_IN',
     }
     return render(request, 'index.html', context)

@@ -57,7 +57,13 @@ function setupEventListeners() {
     const btnResults = document.getElementById('btn-results');
     const btnShare = document.getElementById('btn-share');
     if (btnResults) btnResults.addEventListener('click', () => { loadResults(); showResultsSection(); });
-    if (btnShare) btnShare.addEventListener('click', () => openShareModal());
+    if (btnShare) btnShare.addEventListener('click', () => {
+        if (navigator.share) {
+            shareNative();
+        } else {
+            openShareModal();
+        }
+    });
 
     const langHi = document.getElementById('lang-hi');
     const langEn = document.getElementById('lang-en');
@@ -466,13 +472,23 @@ function closeShareModal() {
     modal.classList.remove('flex');
 }
 
+function shareNative() {
+    const lang = localStorage.getItem('lang') || 'hi';
+    const total = (typeof currentResults?.total_votes !== 'undefined') ? currentResults.total_votes : 0;
+    const shareUrl = getShareUrl();
+    const textHi = `प्रभाग क्र. 8 – ब: नगरसेवक चुनाव परिणाम: कुल ${total} वोट पड़े।`;
+    const textEn = `Ward 8-B Councillor Poll Results: Total ${total} votes.`;
+    const text = lang === 'hi' ? textHi : textEn;
+    navigator.share({ title: STRINGS[lang].page_title, text, url: shareUrl }).catch(() => {});
+}
+
 // Social media sharing functions
 function shareOnWhatsApp() {
     const lang = localStorage.getItem('lang') || 'hi';
     const total = (typeof currentResults?.total_votes !== 'undefined') ? currentResults.total_votes : 0;
     const shareUrl = getShareUrl();
-    const textHi = `प्रभाग क्र. 8 – ब: नगरसेवक चुनाव परिणाम: कुल ${total} वोट पड़े। ${shareUrl}`;
-    const textEn = `Ward 8-B Councillor Poll Results: Total ${total} votes. ${shareUrl}`;
+    const textHi = `${shareUrl} — प्रभाग क्र. 8 – ब: नगरसेवक चुनाव परिणाम: कुल ${total} वोट पड़े।`;
+    const textEn = `${shareUrl} — Ward 8-B Councillor Poll Results: Total ${total} votes.`;
     const text = lang === 'hi' ? textHi : textEn;
     if (navigator.share) {
         navigator.share({ title: STRINGS[lang].page_title, text, url: shareUrl }).catch(() => {});
@@ -513,7 +529,7 @@ function shareOnInstagram() {
     copyLink();
     const isMobile = /Android|iPhone|iPad|iPod|IEMobile|Mobile/i.test(navigator.userAgent);
     const appUrl = 'instagram://app';
-    const webUrl = 'https://www.instagram.com/';
+    const webUrl = 'https://www.instagram.com/direct/inbox/';
     if (isMobile) {
         const fallback = setTimeout(() => { window.open(webUrl, '_blank'); }, 800);
         try {
@@ -593,8 +609,15 @@ function formatSelectCandidateLabel(candidate) {
 
 // Deep-link & share helpers
 function getShareUrl() {
-    const base = window.location.origin + window.location.pathname;
-    return base;
+    try {
+        const canonical = document.querySelector('link[rel="canonical"]');
+        const href = canonical && canonical.href ? canonical.href : window.location.href;
+        const url = new URL(href);
+        url.hash = '';
+        return url.toString();
+    } catch (e) {
+        return window.location.href;
+    }
 }
 
 function initDeepLink() {
