@@ -7,6 +7,7 @@ from django.shortcuts import render
 from .models import Candidate, Vote, VoteCount, SiteSettings
 from .serializers import CandidateSerializer, VoteCountSerializer
 import logging
+from django.views.decorators.csrf import csrf_exempt
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +40,7 @@ def home(request):
     }
     return render(request, 'index.html', context)
 
+@csrf_exempt
 @api_view(['POST'])
 def cast_vote(request):
     """
