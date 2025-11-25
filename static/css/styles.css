@@ -1,0 +1,369 @@
+/* Glassmorphism Styles */
+.glass-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+/* Custom Radio Buttons */
+.candidate-radio {
+    display: none;
+}
+
+.candidate-label {
+    display: block;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.candidate-label:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(147, 51, 234, 0.5);
+    transform: translateY(-2px);
+}
+
+.candidate-radio:checked + .candidate-label {
+    background: rgba(255, 105, 180, 0.25);
+    border-color: rgba(255, 105, 180, 0.9);
+    box-shadow: 0 0 20px rgba(255, 105, 180, 0.35);
+}
+
+/* Custom round radio visual */
+.radio-custom {
+    width: 18px;
+    height: 18px;
+    border-radius: 9999px;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    margin-right: 12px;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.radio-custom::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 10px;
+    height: 10px;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+    transition: transform 0.2s ease;
+}
+
+.selected-card .radio-custom::after {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.selected-card {
+    border-color: rgba(255, 105, 180, 0.9);
+    box-shadow: 0 0 24px rgba(255, 105, 180, 0.35);
+}
+
+.candidate-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #e5e7eb;
+}
+
+.candidate-party {
+    color: #9ca3af;
+    font-size: 0.9rem;
+}
+
+/* Vote Button */
+/* Unified button styles */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    color: #fff;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.btn:hover { transform: translateY(-1px); }
+
+.btn-vote {
+    background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+    box-shadow: 0 10px 20px rgba(124, 58, 237, 0.35);
+}
+.btn-vote:hover {
+    box-shadow: 0 12px 24px rgba(124, 58, 237, 0.45);
+}
+
+.btn-results {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    box-shadow: 0 10px 20px rgba(79, 70, 229, 0.35);
+}
+.btn-results:hover {
+    box-shadow: 0 12px 24px rgba(79, 70, 229, 0.45);
+}
+
+.btn-share {
+    background: linear-gradient(135deg, #f093fb 0%, #d946ef 100%);
+    box-shadow: 0 10px 20px rgba(217, 70, 239, 0.35);
+}
+.btn-share:hover {
+    box-shadow: 0 12px 24px rgba(217, 70, 239, 0.45);
+}
+
+/* Share Button */
+.share-button {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    box-shadow: 0 4px 15px 0 rgba(240, 147, 251, 0.4);
+}
+
+.share-button:hover {
+    background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+    box-shadow: 0 6px 20px 0 rgba(240, 147, 251, 0.6);
+}
+
+/* Back Button */
+.back-button {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.back-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Social Media Buttons */
+.social-button {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+}
+
+.social-icon-button {
+    color: #e5e7eb;
+    text-align: center;
+}
+
+/* Language toggle */
+.lang-btn {
+    padding: 6px 10px;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #e5e7eb;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.lang-btn.active {
+    background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+    color: #fff;
+    border-color: rgba(168, 85, 247, 0.6);
+}
+
+.social-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.whatsapp:hover {
+    background: rgba(37, 211, 102, 0.2);
+    border-color: rgba(37, 211, 102, 0.5);
+}
+
+.twitter:hover {
+    background: rgba(29, 161, 242, 0.2);
+    border-color: rgba(29, 161, 242, 0.5);
+}
+
+.instagram:hover {
+    background: rgba(225, 48, 108, 0.2);
+    border-color: rgba(225, 48, 108, 0.5);
+}
+
+.facebook:hover {
+    background: rgba(66, 103, 178, 0.2);
+    border-color: rgba(66, 103, 178, 0.5);
+}
+
+/* Brand base colors */
+.whatsapp { background: rgba(37, 211, 102, 0.15); border-color: rgba(37, 211, 102, 0.4); }
+.facebook { background: rgba(66, 103, 178, 0.15); border-color: rgba(66, 103, 178, 0.4); }
+.twitter { background: rgba(29, 161, 242, 0.15); border-color: rgba(29, 161, 242, 0.4); }
+.instagram { background: linear-gradient(135deg, #f58529, #dd2a7b, #8134af, #515bd4); border-color: rgba(221, 42, 123, 0.4); }
+
+/* Share input */
+.share-input {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 0.5rem 0.75rem;
+    color: #e5e7eb;
+    font-size: 0.9rem;
+}
+
+.share-input:focus {
+    outline: none;
+    border-color: rgba(168, 85, 247, 0.6);
+    box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.25);
+}
+
+/* Icon sizing */
+.icon-24 { width: 24px; height: 24px; }
+
+/* Party logo (responsive, adjustable) */
+.party-logo {
+    width: var(--party-logo-size, 77px);
+    height: var(--party-logo-size, 65px);
+    border-radius: 6px;
+    object-fit: contain;
+    background: rgba(255, 255, 255, 0.08);
+    padding: -1px;
+}
+@media (max-width: 768px) {
+    .party-logo { --party-logo-size: 28px; }
+}
+
+/* Copy Button */
+.copy-button {
+    background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+    color: #1f2937;
+}
+
+.copy-button:hover {
+    background: linear-gradient(135deg, #8fd3f4 0%, #84fab0 100%);
+}
+
+/* Close Button */
+.close-button {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+}
+
+.close-button:hover {
+    background: rgba(239, 68, 68, 0.3);
+}
+
+/* Progress Bars */
+.progress-container {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    height: 20px;
+    margin-top: 0.5rem;
+}
+
+.progress-bar {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.8s ease;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+/* Toast Notification */
+.toast-success {
+    background: rgba(34, 197, 94, 0.2);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    color: #86efac;
+}
+
+.toast-error {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+}
+
+/* Animations */
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+.toast-enter {
+    animation: slideInRight 0.3s ease-out;
+}
+
+.toast-exit {
+    animation: slideOutRight 0.3s ease-in;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .glass-card {
+        padding: 1.5rem;
+    }
+    
+    .candidate-label {
+        padding: 0.75rem;
+    }
+    
+    .candidate-name {
+        font-size: 1rem;
+    }
+    
+    .candidate-party {
+        font-size: 0.8rem;
+    }
+}
+
+/* Chart Container */
+.chart-container {
+    position: relative;
+    height: 400px;
+    margin: 2rem 0;
+}
+
+@media (max-width: 768px) {
+    .chart-container {
+        height: 300px;
+    }
+}
+
+/* Loading Animation */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}

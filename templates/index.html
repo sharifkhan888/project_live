@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="canonical" href="{{ og_url|default:request.build_absolute_uri|default_if_none:request.build_absolute_uri }}">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{ og_title|default:'प्रभाग क्र. 8 – ब: में जनता के' }}">
+    <meta property="og:description" content="{{ og_description|default:'नगरसेवक के लिए सर्वश्रेष्ठ उम्मीदवार कौन?' }}">
+    <meta property="og:image" content="{{ og_image|default:'/static/img/parties/congress.png' }}">
+    <meta property="og:url" content="{{ og_url|default:request.build_absolute_uri|default_if_none:request.build_absolute_uri }}">
+    <meta property="og:site_name" content="{{ og_site_name|default:'Ward 8-B Poll' }}">
+    <meta property="og:locale" content="{{ og_locale|default:'hi_IN' }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ og_title|default:'प्रभाग क्र. 8 – ब: में जनता के' }}">
+    <meta name="twitter:description" content="{{ og_description|default:'नगरसेवक के लिए सर्वश्रेष्ठ उम्मीदवार कौन?' }}">
+    <meta name="twitter:image" content="{{ og_image|default:'/static/img/parties/congress.png' }}">
+    <meta name="twitter:url" content="{{ og_url|default:request.build_absolute_uri|default_if_none:request.build_absolute_uri }}">
+    <title data-i18n="page_title">प्रभाग क्र. 8 – ब: में जनता के</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="icon" href="{% static 'favicon.ico' %}">
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900 min-h-screen text-white">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent" data-i18n="page_title">प्रभाग क्र. 8 – ब: में जनता के</h1>
+            <p class="text-2xl md:text-3xl font-bold text-gray-200 mb-2" data-i18n="question">नगरसेवक के लिए सर्वश्रेष्ठ उम्मीदवार कौन?</p>
+            <h2 class="text-xl md:text-2xl text-gray-300" data-i18n="subheading">(मदारटेकडी, ताजनगर, मुस्ताकअली नगर)</h2>
+        </div>
+
+        <!-- Voting Section -->
+        <div id="voting-section" class="glass-card p-8 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-2xl font-semibold text-center w-full" data-i18n="voting_title">अपना वोट दें</h3>
+                <div class="hidden md:flex items-center gap-2 ml-4">
+                    <button id="lang-hi" class="lang-btn active" aria-label="Switch to Hindi">हिंदी</button>
+                    <span class="text-gray-400">/</span>
+                    <button id="lang-en" class="lang-btn" aria-label="Switch to English">English</button>
+                </div>
+            </div>
+            <div class="md:hidden flex items-center justify-center mb-4">
+                <button id="lang-hi-m" class="lang-btn active mr-2" aria-label="Switch to Hindi">हिंदी</button>
+                <button id="lang-en-m" class="lang-btn" aria-label="Switch to English">English</button>
+            </div>
+            <p id="vote-hint" class="text-center text-lg md:text-xl font-bold text-gray-200 mb-4" data-i18n="vote_hint">अपना पसंदीदा उम्मीदवार चुनें और वोट करें</p>
+            <form id="vote-form" class="space-y-4">
+                <div id="candidates-container" class="space-y-3">
+                    <!-- Candidates will be loaded here -->
+                </div>
+                <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <button type="submit" id="btn-vote" class="btn btn-vote w-full" aria-label="Submit vote" data-i18n="vote_btn">वोट करें</button>
+                    <button type="button" id="btn-results" class="btn btn-results w-full" aria-label="View results" data-i18n="results_btn">परिणाम</button>
+                    <button type="button" id="btn-share" class="btn btn-share w-full" aria-label="Open share modal" data-i18n="share_btn">शेयर</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results-section" class="hidden">
+            <div class="glass-card p-8 mb-8">
+                <h3 class="text-2xl font-semibold mb-6 text-center" data-i18n="results_title">मतदान परिणाम</h3>
+                
+                <!-- Total Votes -->
+                <div class="text-center mb-8">
+                    <div class="text-4xl font-bold text-purple-400" id="total-votes">0</div>
+                    <div class="text-gray-400" data-i18n="total_votes_label">कुल वोट</div>
+                </div>
+
+                <!-- Pie Chart -->
+                <div class="mb-8">
+                    <canvas id="results-chart" width="400" height="400"></canvas>
+                </div>
+
+                <!-- Progress Bars -->
+                <div id="progress-bars" class="space-y-4">
+                    <!-- Progress bars will be loaded here -->
+                </div>
+
+                <!-- Share Buttons -->
+                <div class="text-center mt-8">
+                    <button onclick="openShareModal()" class="share-button px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105" aria-label="Open share modal" data-i18n="share_results">परिणाम साझा करें</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back to Vote Button -->
+        <div id="back-to-vote" class="hidden text-center mb-8">
+            <button onclick="showVotingSection()" class="back-button px-6 py-3 rounded-full font-semibold transition-all duration-300" aria-label="Back to voting" data-i18n="back_to_vote">वापस वोट करें</button>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="share-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="share-modal-title">
+        <div class="glass-card p-8 max-w-md w-full mx-4">
+            <h3 id="share-modal-title" class="text-xl font-semibold mb-6 text-center" data-i18n="share_modal_title">परिणाम साझा करें</h3>
+
+            <!-- Share via Link -->
+            <div class="mb-4">
+                <label class="block text-sm text-gray-300 mb-2" data-i18n="share_via_link">लिंक के माध्यम से साझा करें</label>
+                <div class="flex items-center gap-2">
+                    <input id="share-link-input" type="text" class="share-input flex-1" value="" readonly aria-label="Shareable link" />
+                    <button id="copy-link-btn" class="copy-button px-4 py-2 rounded-full font-semibold transition-all duration-300" aria-label="Copy link" data-i18n="copy_link">लिंक कॉपी करें</button>
+                </div>
+            </div>
+
+            <!-- Social buttons -->
+            <div class="mb-2 text-sm text-gray-300" data-i18n="share_on_social">सोशल मीडिया पर साझा करें</div>
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <button onclick="shareOnWhatsApp()" class="social-button whatsapp p-4 rounded-lg transition-all duration-300 social-icon-button" aria-label="Share on WhatsApp">
+                    <img src="/static/img/social/whatsapp.svg" class="icon-24 mx-auto mb-2" alt="WhatsApp" />
+                    <div>WhatsApp</div>
+                </button>
+                <button onclick="shareOnTwitter()" class="social-button twitter p-4 rounded-lg transition-all duration-300 social-icon-button" aria-label="Share on Twitter">
+                    <img src="/static/img/social/twitter.svg" class="icon-24 mx-auto mb-2" alt="Twitter" />
+                    <div>Twitter</div>
+                </button>
+                <button onclick="shareOnInstagram()" class="social-button instagram p-4 rounded-lg transition-all duration-300 social-icon-button" aria-label="Share on Instagram">
+                    <img src="/static/img/social/instagram.svg" class="icon-24 mx-auto mb-2" alt="Instagram" />
+                    <div>Instagram</div>
+                </button>
+                <button onclick="shareOnFacebook()" class="social-button facebook p-4 rounded-lg transition-all duration-300 social-icon-button" aria-label="Share on Facebook">
+                    <img src="/static/img/social/facebook.svg" class="icon-24 mx-auto mb-2" alt="Facebook" />
+                    <div>Facebook</div>
+                </button>
+            </div>
+            <div class="text-center mt-2">
+                <button onclick="closeShareModal()" class="close-button px-4 py-2 rounded-full transition-all duration-300" aria-label="Close share modal" data-i18n="close">बंद करें</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-4 right-4 hidden z-50">
+        <div class="glass-card px-6 py-4 rounded-lg shadow-lg">
+            <div id="toast-message"></div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/app.js' %}"></script>
+</body>
+</html>
