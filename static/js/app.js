@@ -11,6 +11,13 @@ document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
     initModalAccessibility();
     initDeepLink();
+    try {
+        const voted = localStorage.getItem('voted') === '1';
+        if (voted) {
+            const btnVote = document.getElementById('btn-vote');
+            if (btnVote) btnVote.disabled = true;
+        }
+    } catch (e) {}
 });
 
 // Party logos map (supports English and localized labels)
@@ -133,6 +140,15 @@ function renderCandidates() {
 async function handleVote(event) {
     event.preventDefault();
     
+    try {
+        if (localStorage.getItem('voted') === '1') {
+            showToast('आप पहले ही वोट कर चुके हैं', 'error');
+            loadResults();
+            showResultsSection();
+            return;
+        }
+    } catch (e) {}
+
     const selectedCandidate = document.querySelector('input[name="candidate"]:checked');
     if (!selectedCandidate) {
         showToast('कृपया एक उम्मीदवार चुनें', 'error');

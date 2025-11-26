@@ -9,6 +9,8 @@ from .models import Candidate, Vote, VoteCount, SiteSettings
 from .serializers import CandidateSerializer, VoteCountSerializer
 import logging
 from django.views.decorators.csrf import csrf_exempt
+from django.core import signing
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -62,6 +64,17 @@ def cast_vote(request):
 
         candidate_id = int(candidate_id)
 
+        cookie = request.COOKIES.get('VOTE_LOCK')
+        if cookie:
+            try:
+                signing.loads(cookie, salt='poll.vote')
+                return Response({
+                    'success': False,
+                    'error': 'You have already voted'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            except signing.BadSignature:
+                pass
+
         ip_address = get_client_ip(request)
 
         try:
@@ -104,7 +117,17 @@ def cast_vote(request):
 
         logger.info(f"Vote cast successfully (#{vote_index}) from IP {ip_address} for candidate {candidate.name}")
 
-        return Response({'success': True, 'message': 'Vote recorded successfully'}, status=status.HTTP_201_CREATED)
+        resp = Response({'success': True, 'message': 'Vote recorded successfully'}, status=status.HTTP_201_CREATED)
+        token = signing.dumps({'ts': timezone.now().timestamp(), 'ip': ip_address}, salt='poll.vote')
+        resp.set_cookie(
+            key='VOTE_LOCK',
+            value=token,
+            max_age=60*60*24*365*5,
+            httponly=True,
+            secure=request.is_secure(),
+            samesite='Strict'
+        )
+        return resp
 
     except Exception as e:
         logger.error(f"Error casting vote: {str(e)}")
