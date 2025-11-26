@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from datetime import timedelta
 
 class Candidate(models.Model):
     name = models.CharField(max_length=100)
@@ -50,4 +51,27 @@ class SiteSettings(models.Model):
     @classmethod
     def get_solo(cls):
         obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
+
+class GlobalTimer(models.Model):
+    start_time = models.DateTimeField(default=timezone.now)
+    end_time = models.DateTimeField()
+    updated_at = models.DateTimeField(default=timezone.now)
+
+    def save(self, *args, **kwargs):
+        if not self.end_time:
+            self.end_time = (self.start_time or timezone.now()) + timedelta(hours=48)
+        self.updated_at = timezone.now()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"GlobalTimer: {self.start_time} -> {self.end_time}"
+
+    @classmethod
+    def get_solo(cls):
+        obj, created = cls.objects.get_or_create(pk=1)
+        if created:
+            obj.start_time = timezone.now()
+            obj.end_time = obj.start_time + timedelta(hours=48)
+            obj.save()
         return obj

@@ -5,7 +5,7 @@ from django.db import transaction
 from django.db.models import Sum, F, Case, When, Value, IntegerField, Q
 from django.shortcuts import render
 from django.templatetags.static import static
-from .models import Candidate, Vote, VoteCount, SiteSettings
+from .models import Candidate, Vote, VoteCount, SiteSettings, GlobalTimer
 from .serializers import CandidateSerializer, VoteCountSerializer
 import logging
 from django.views.decorators.csrf import csrf_exempt
@@ -226,4 +226,36 @@ def get_candidates(request):
         return Response({
             'success': False,
             'error': 'An error occurred while fetching candidates'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+def get_cycle_end_time(request):
+    """
+    Return the current cycle end time for the global 48-hour timer
+    """
+    try:
+        timer = GlobalTimer.get_solo()
+        now = timezone.now()
+        duration_seconds = 48 * 60 * 60
+        # compute current cycle end
+        elapsed = (now - timer.start_time).total_seconds()
+        cycles = int(elapsed // duration_seconds)
+        current_end = timer.start_time + timezone.timedelta(seconds=(cycles + 1) * duration_seconds)
+
+        remaining_seconds = int((current_end - now).total_seconds())
+        if remaining_seconds < 0:
+            remaining_seconds = 0
+
+        return Response({
+            'success': True,
+            'end_time': current_end.isoformat(),
+            'server_time': now.isoformat(),
+            'duration_seconds': duration_seconds,
+            'remaining_seconds': remaining_seconds
+        }, status=status.HTTP_200_OK)
+    except Exception as e:
+        logger.error(f"Error getting cycle end time: {str(e)}")
+        return Response({
+            'success': False,
+            'error': 'An error occurred while fetching timer info'
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

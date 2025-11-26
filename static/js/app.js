@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
     initModalAccessibility();
     initDeepLink();
+    initGlobalTimer();
     try {
         const voted = localStorage.getItem('voted') === '1';
         if (voted) {
@@ -37,6 +38,53 @@ const PARTY_LOGOS = {
 function getPartyLogoSrc(party) {
     const key = (party || '').trim();
     return PARTY_LOGOS[key] || PARTY_LOGOS['Independent'];
+}
+
+async function initGlobalTimer() {
+    const el = document.getElementById('global-timer');
+    if (!el) return;
+    let endMs = null;
+    let offsetMs = 0;
+    let timerId = null;
+    const pad2 = (n) => (n < 10 ? '0' + n : '' + n);
+    const render = (remaining) => {
+        const total = Math.max(0, Math.floor(remaining / 1000));
+        const days = Math.floor(total / 86400);
+        const hours = Math.floor((total % 86400) / 3600);
+        const minutes = Math.floor((total % 3600) / 60);
+        const seconds = total % 60;
+        const lang = localStorage.getItem('lang') || 'hi';
+        const prefix = STRINGS[lang]?.timer_prefix || 'Poll Ends In';
+        el.textContent = `${prefix}: ${pad2(days)} Days : ${pad2(hours)} Hours : ${pad2(minutes)} Minutes : ${pad2(seconds)} Seconds`;
+    };
+    const tick = () => {
+        if (!endMs) return;
+        const serverNow = Date.now() + offsetMs;
+        const remaining = endMs - serverNow;
+        if (remaining <= 0) {
+            clearInterval(timerId);
+            timerId = null;
+            fetchEndTime();
+            return;
+        }
+        render(remaining);
+    };
+    const fetchEndTime = async () => {
+        try {
+            const clientBefore = Date.now();
+            const res = await fetch('/api/end_time/');
+            const data = await res.json();
+            const clientAfter = Date.now();
+            if (!data.success) return;
+            const serverTimeMs = Date.parse(data.server_time);
+            offsetMs = serverTimeMs - clientAfter;
+            endMs = Date.parse(data.end_time);
+            render(endMs - (Date.now() + offsetMs));
+            if (timerId) clearInterval(timerId);
+            timerId = setInterval(tick, 1000);
+        } catch (e) {}
+    };
+    fetchEndTime();
 }
 
 // Party colors map (supports English and localized labels)
@@ -364,7 +412,8 @@ const STRINGS = {
         copy_error: 'लिंक कॉपी करने में त्रुटि हुई',
         share_instagram_hint: 'लिंक कॉपी किया गया! Instagram में साझा करें।',
         select_candidate_aria: (name, party) => `उम्मीदवार चुनें ${name} (${party})`,
-        votes_label: (name, votes, percentage) => `${votes} वोट (${percentage}%)`
+        votes_label: (name, votes, percentage) => `${votes} वोट (${percentage}%)`,
+        timer_prefix: 'मतदान समाप्त होने तक'
     },
     en: {
         page_title: 'Ward No. 8-B: Councillor Election Poll',
@@ -393,7 +442,8 @@ const STRINGS = {
         copy_error: 'Error copying link',
         share_instagram_hint: 'Link copied! Share on Instagram.',
         select_candidate_aria: (name, party) => `Select candidate ${name} (${party})`,
-        votes_label: (name, votes, percentage) => `${votes} votes (${percentage}%)`
+        votes_label: (name, votes, percentage) => `${votes} votes (${percentage}%)`,
+        timer_prefix: 'Poll Ends In'
     }
 };
 
