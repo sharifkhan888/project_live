@@ -468,16 +468,8 @@ function closeShareModal() {
 
 // Social media sharing functions
 function shareOnWhatsApp() {
-    const lang = localStorage.getItem('lang') || 'hi';
-    const total = (typeof currentResults?.total_votes !== 'undefined') ? currentResults.total_votes : 0;
     const shareUrl = getShareUrl();
-    const textHi = `प्रभाग क्र. 8 – ब: नगरसेवक चुनाव परिणाम: कुल ${total} वोट पड़े। ${shareUrl}`;
-    const textEn = `Ward 8-B Councillor Poll Results: Total ${total} votes. ${shareUrl}`;
-    const text = lang === 'hi' ? textHi : textEn;
-    if (navigator.share) {
-        navigator.share({ title: STRINGS[lang].page_title, text, url: shareUrl }).catch(() => {});
-        return;
-    }
+    const text = shareUrl;
     const isMobile = /Android|iPhone|iPad|iPod|IEMobile|Mobile/i.test(navigator.userAgent);
     const appUrl = `whatsapp://send?text=${encodeURIComponent(text)}`;
     const webUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
@@ -593,8 +585,15 @@ function formatSelectCandidateLabel(candidate) {
 
 // Deep-link & share helpers
 function getShareUrl() {
-    const base = window.location.origin + window.location.pathname;
-    return base;
+    try {
+        const canonical = document.querySelector('link[rel="canonical"]');
+        const href = canonical && canonical.href ? canonical.href : window.location.href;
+        const url = new URL(href);
+        url.hash = '';
+        return url.toString();
+    } catch (e) {
+        return window.location.href;
+    }
 }
 
 function initDeepLink() {

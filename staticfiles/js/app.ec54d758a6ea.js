@@ -423,7 +423,7 @@ function applyTranslations() {
     });
     // Update share link input placeholder/value
     const shareInput = document.getElementById('share-link-input');
-    if (shareInput) shareInput.value = window.location.href;
+    if (shareInput) shareInput.value = getShareUrl();
 }
 
 // Toast notification system
@@ -466,8 +466,7 @@ function closeShareModal() {
 
 // Social media sharing functions
 function shareOnWhatsApp() {
-    const text = `प्रभाग क्र. 8 – ब नगरसेवक चुनाव परिणाम: कुल ${currentResults.total_votes} वोट पड़े। ${window.location.href}`;
-    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    const url = `https://wa.me/?text=${encodeURIComponent(getShareUrl())}`;
     window.open(url, '_blank');
 }
 
@@ -491,7 +490,7 @@ function shareOnFacebook() {
 
 function copyLink() {
     const input = document.getElementById('share-link-input');
-    const toCopy = input ? input.value : window.location.href;
+    const toCopy = input ? input.value : getShareUrl();
     navigator.clipboard.writeText(toCopy).then(() => {
         const lang = localStorage.getItem('lang') || 'hi';
         showToast(STRINGS[lang].copied, 'success');
@@ -499,6 +498,19 @@ function copyLink() {
         const lang = localStorage.getItem('lang') || 'hi';
         showToast(STRINGS[lang].copy_error, 'error');
     });
+}
+
+// Deep-link & share helpers
+function getShareUrl() {
+    try {
+        const canonical = document.querySelector('link[rel="canonical"]');
+        const href = canonical && canonical.href ? canonical.href : window.location.href;
+        const url = new URL(href);
+        url.hash = '';
+        return url.toString();
+    } catch (e) {
+        return window.location.href;
+    }
 }
 
 // Accessibility helpers for modal
