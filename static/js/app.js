@@ -43,19 +43,111 @@ function getPartyLogoSrc(party) {
 async function initGlobalTimer() {
     const el = document.getElementById('global-timer');
     if (!el) return;
+    const clock = document.getElementById('flip-clock');
+    if (!clock) return;
     let endMs = null;
     let offsetMs = 0;
     let timerId = null;
     const pad2 = (n) => (n < 10 ? '0' + n : '' + n);
+    const buildCard = () => {
+        const card = document.createElement('div');
+        card.className = 'flip-card';
+        const top = document.createElement('div');
+        top.className = 'flip-top';
+        top.setAttribute('aria-hidden', 'true');
+        const bottom = document.createElement('div');
+        bottom.className = 'flip-bottom';
+        bottom.setAttribute('aria-hidden', 'true');
+        card.appendChild(top);
+        card.appendChild(bottom);
+        return { card, top, bottom };
+    };
+    const buildUnit = (labelText) => {
+        const unit = document.createElement('div');
+        unit.className = 'flip-unit';
+        unit.setAttribute('role', 'group');
+        const digits = document.createElement('div');
+        digits.className = 'digits';
+        const d1 = buildCard();
+        const d2 = buildCard();
+        digits.appendChild(d1.card);
+        digits.appendChild(d2.card);
+        const label = document.createElement('div');
+        label.className = 'unit-label';
+        label.textContent = labelText;
+        unit.appendChild(digits);
+        unit.appendChild(label);
+        clock.appendChild(unit);
+        return { unit, d1, d2, label };
+    };
+    const getLabels = () => {
+        const lang = localStorage.getItem('lang') || 'hi';
+        return {
+            prefix: STRINGS[lang]?.timer_prefix || 'Poll Ends In',
+            days: STRINGS[lang]?.days_label || 'Days',
+            hours: STRINGS[lang]?.hours_label || 'Hours',
+            minutes: STRINGS[lang]?.minutes_label || 'Minutes',
+            seconds: STRINGS[lang]?.seconds_label || 'Seconds'
+        };
+    };
+    const labels = getLabels();
+    const prefixEl = document.createElement('div');
+    prefixEl.style.marginBottom = '6px';
+    prefixEl.style.color = '#c4b5fd';
+    prefixEl.textContent = labels.prefix;
+    el.insertBefore(prefixEl, clock);
+    const daysRef = buildUnit(labels.days);
+    const hoursRef = buildUnit(labels.hours);
+    const minutesRef = buildUnit(labels.minutes);
+    const secondsRef = buildUnit(labels.seconds);
+    const flip = (ref, nextDigit) => {
+        const top = ref.top;
+        const bottom = ref.bottom;
+        const cur = top.textContent || '';
+        if (cur === '') {
+            top.textContent = String(nextDigit);
+            bottom.textContent = '';
+            return;
+        }
+        if (cur === String(nextDigit)) return;
+        top.classList.remove('flip-animate-top');
+        bottom.classList.remove('flip-animate-bottom');
+        void top.offsetWidth;
+        bottom.textContent = String(nextDigit);
+        top.classList.add('flip-animate-top');
+        bottom.classList.add('flip-animate-bottom');
+        setTimeout(() => {
+            top.textContent = String(nextDigit);
+            top.classList.remove('flip-animate-top');
+            bottom.classList.remove('flip-animate-bottom');
+            bottom.textContent = '';
+        }, 450);
+    };
+    const setDigits = (ref, value) => {
+        const str = pad2(value);
+        flip(ref.d1, str[0]);
+        flip(ref.d2, str[1]);
+    };
     const render = (remaining) => {
         const total = Math.max(0, Math.floor(remaining / 1000));
         const days = Math.floor(total / 86400);
         const hours = Math.floor((total % 86400) / 3600);
         const minutes = Math.floor((total % 3600) / 60);
         const seconds = total % 60;
-        const lang = localStorage.getItem('lang') || 'hi';
-        const prefix = STRINGS[lang]?.timer_prefix || 'Poll Ends In';
-        el.textContent = `${prefix}: ${pad2(days)} Days : ${pad2(hours)} Hours : ${pad2(minutes)} Minutes : ${pad2(seconds)} Seconds`;
+        const l = getLabels();
+        prefixEl.textContent = l.prefix;
+        daysRef.label.textContent = l.days;
+        hoursRef.label.textContent = l.hours;
+        minutesRef.label.textContent = l.minutes;
+        secondsRef.label.textContent = l.seconds;
+        setDigits(daysRef, days);
+        setDigits(hoursRef, hours);
+        setDigits(minutesRef, minutes);
+        setDigits(secondsRef, seconds);
+        daysRef.unit.setAttribute('aria-label', l.days + ' ' + pad2(days));
+        hoursRef.unit.setAttribute('aria-label', l.hours + ' ' + pad2(hours));
+        minutesRef.unit.setAttribute('aria-label', l.minutes + ' ' + pad2(minutes));
+        secondsRef.unit.setAttribute('aria-label', l.seconds + ' ' + pad2(seconds));
     };
     const tick = () => {
         if (!endMs) return;
@@ -413,7 +505,11 @@ const STRINGS = {
         share_instagram_hint: 'लिंक कॉपी किया गया! Instagram में साझा करें।',
         select_candidate_aria: (name, party) => `उम्मीदवार चुनें ${name} (${party})`,
         votes_label: (name, votes, percentage) => `${votes} वोट (${percentage}%)`,
-        timer_prefix: 'मतदान समाप्त होने तक'
+        timer_prefix: 'मतदान समाप्त होने तक',
+        days_label: 'दिन',
+        hours_label: 'घंटे',
+        minutes_label: 'मिनट',
+        seconds_label: 'सेकंड'
     },
     en: {
         page_title: 'Ward No. 8-B: Councillor Election Poll',
@@ -443,7 +539,11 @@ const STRINGS = {
         share_instagram_hint: 'Link copied! Share on Instagram.',
         select_candidate_aria: (name, party) => `Select candidate ${name} (${party})`,
         votes_label: (name, votes, percentage) => `${votes} votes (${percentage}%)`,
-        timer_prefix: 'Poll Ends In'
+        timer_prefix: 'Poll Ends In',
+        days_label: 'Days',
+        hours_label: 'Hours',
+        minutes_label: 'Minutes',
+        seconds_label: 'Seconds'
     }
 };
 
